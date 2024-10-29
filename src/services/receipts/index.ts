@@ -29,12 +29,10 @@ export const getReceiptFile = async (id: string) => {
   try {
     console.log('Fetching PDF URL for receipt ID:', id);
     
-    // Don't set responseType to 'blob' since we're expecting JSON
     const response = await axiosInstance.get<PDFResponse>(ENDPOINTS.RECEIPTS.FILE(id));
     
     console.log('Response:', response.data);
     
-    // The response.data.file should contain the PDF URL
     if (response.data && response.data.file) {
       return response.data; // Return the response directly which contains { file: "url" }
     } else {
