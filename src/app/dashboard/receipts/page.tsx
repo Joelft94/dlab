@@ -145,6 +145,18 @@ export default function ReceiptsPage() {
     },
   });
 
+  const handleDownload = () => {
+    if (receiptPdf?.file) {
+      window.open(receiptPdf.file, "_blank");
+    }
+  };
+
+  const handleShare = () => {
+    if (receiptPdf?.file) {
+      window.open(receiptPdf.file, "_blank");
+    }
+  };
+
   const handleAddFilter = (id: string) => {
     if (!activeFilters.find((f) => f.id === id)) {
       setActiveFilters([...activeFilters, { id, value: null }]);
@@ -415,10 +427,10 @@ export default function ReceiptsPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#4880F8] mb-4" />
                 <p className="text-white">Cargando PDF...</p>
               </div>
-            ) : receiptPdf?.file ? ( // Changed from pdfUrl to receiptPdf?.file
+            ) : receiptPdf?.file ? (
               <div className="w-full h-[calc(100%-60px)] bg-white">
                 <iframe
-                  src={receiptPdf.file} // Use the URL directly from the response
+                  src={receiptPdf.file}
                   className="w-full h-full"
                   title="PDF Viewer"
                 />
@@ -435,6 +447,37 @@ export default function ReceiptsPage() {
                 )}
               </div>
             )}
+
+            {/* Footer with buttons */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-center bg-[#1E1E1E] border-t border-gray-800">
+              <Button
+                variant="outline"
+                className="text-white border-gray-700 hover:bg-gray-800"
+                onClick={handleClosePdf}
+              >
+                CERRAR
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  className="text-[#4880F8] hover:text-[#4880F8]/90"
+                  onClick={handleShare}
+                  disabled={!receiptPdf?.file}
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Compartir
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="text-[#4880F8] hover:text-[#4880F8]/90"
+                  onClick={handleDownload}
+                  disabled={!receiptPdf?.file}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Descargar
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
