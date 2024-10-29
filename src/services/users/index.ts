@@ -1,17 +1,29 @@
-import type { PaginatedResponse, User } from '@/types/api';
-import axios from '../config/axios';
-import { ENDPOINTS } from '../config/endpoints';
+import type { PaginatedResponse, User } from "@/types/api"
+import axiosInstance from "../config/axios"
+import { ENDPOINTS } from "../config/endpoints"
 
-interface GetUsersParams {
-  nationality?: string;
-  search?: string;
-  page?: number;
+export interface UserFilters {
+  search?: string
+  nationality?: string
+  page?: number
+  ordering?: string
 }
 
-export const getUsers = async (params?: GetUsersParams) => {
-  const { data } = await axios.get<PaginatedResponse<User>>(
+interface UsersResponse extends PaginatedResponse<User> {
+  fullFilterIds: number[]
+  // Add any other filter-related fields from the API response
+}
+
+export const getUsers = async (filters?: UserFilters): Promise<UsersResponse> => {
+  const { data } = await axiosInstance.get<UsersResponse>(
     ENDPOINTS.USERS.LIST,
-    { params }
-  );
-  return data;
-};
+    { params: filters }
+  )
+  return data
+}
+
+// Get available filter values
+export const getUsersFilters = async () => {
+  const { data } = await axiosInstance.get(`${ENDPOINTS.USERS.LIST}filters/`)
+  return data
+}
