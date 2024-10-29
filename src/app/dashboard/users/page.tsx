@@ -65,15 +65,15 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold text-gray-900">Lista de empleados</h1>
-          <Badge variant="primary" className="rounded-full bg-[#4880F8] bg-opacity-10 text-[#4880F8]">
+          <h1 className="text-2xl font-semibold text-white">Lista de empleados</h1>
+          <Badge variant="primary" className="px-2.5 py-0.5 text-xs font-medium bg-[#4880F8] text-white rounded-full h-6 min-w-[1.5rem] flex items-center justify-center">
             {data?.totalCount || 0}
           </Badge>
         </div>
         <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
-            className="bg-white hover:bg-gray-50"
+            className="bg-grad-800 hover:bg-gray-50"
           >
             IMPORTAR
           </Button>
@@ -85,14 +85,15 @@ export default function UsersPage() {
           </Button>
         </div>
       </div>
+     <div className="rounded-lg overflow-hidden bg-[#1E1E1E] border border-gray-800">
 
-      <div className="bg-white rounded-lg shadow">
+      <div className=" rounded-lg shadow">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Ordenar por</span>
-                <button className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                <span className="text-sm text-gray-400">Ordenar por</span>
+                <button className="flex items-center gap-1 text-sm font-medium text-gray-400">
                   {filters.sortBy}
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -138,26 +139,26 @@ export default function UsersPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200">
               {data?.results.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <tr key={user.id} className="hover:bg-gray-800/50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-[#4880F8] flex items-center justify-center text-white">
                         {user.initials}
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-white">
                         #{user.employeeNumber}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {user.fullName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {user.phoneNumber}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
@@ -193,5 +194,6 @@ export default function UsersPage() {
         </div>
       </div>
     </div>
+  </div>
   )
 }
