@@ -1,24 +1,65 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { getUsers } from "@/services/users"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Plus, Filter, ChevronDown, Pencil } from "lucide-react"
+import { Search, Plus, ChevronDown, Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { FilterDropdown } from "@/components/users/filter-dropdown"
+
+interface Filter {
+  field: string
+  value: string
+  label: string
+}
 
 export default function UsersPage() {
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    search: string
+    sortBy: string
+    activeFilters: Filter[]
+  }>({
     search: "",
     sortBy: "Número",
+    activeFilters: [],
   })
 
+  // Get users with filters
   const { data, isLoading } = useQuery({
     queryKey: ["users", filters],
-    queryFn: () => getUsers(filters)
+    queryFn: () => getUsers({
+      search: filters.search,
+      ...filters.activeFilters.reduce((acc, filter) => ({
+        ...acc,
+        [filter.field]: filter.value
+      }), {})
+    })
   })
 
+  // Get all users without filters for filter options
+  const { data: allUsers } = useQuery({
+    queryKey: ["users-all"],
+    queryFn: () => getUsers(),
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
+
+  const handleAddFilter = useCallback((filter: Filter) => {
+    setFilters(prev => ({
+      ...prev,
+      activeFilters: [...prev.activeFilters.filter(f => f.field !== filter.field), filter]
+    }))
+  }, [])
+
+  const handleRemoveFilter = useCallback((filterToRemove: Filter) => {
+    setFilters(prev => ({
+      ...prev,
+      activeFilters: prev.activeFilters.filter(
+        f => f.field !== filterToRemove.field || f.value !== filterToRemove.value
+      )
+    }))
+  }, [])
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -45,9 +86,7 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Table Card */}
       <div className="bg-white rounded-lg shadow">
-        {/* Table Header */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -58,14 +97,12 @@ export default function UsersPage() {
                   <ChevronDown className="h-4 w-4" />
                 </button>
               </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-[#4880F8] hover:bg-[#4880F8]/10"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Agregar filtro
-              </Button>
+              <FilterDropdown
+                activeFilters={filters.activeFilters}
+                onAddFilter={handleAddFilter}
+                onRemoveFilter={handleRemoveFilter}
+                data={allUsers?.results}
+              />
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
