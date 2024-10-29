@@ -9,6 +9,6 @@ export const ENDPOINTS = {
   },
   RECEIPTS: {
     LIST: '/receipts/',
-    FILE: (id: number) => `/receipts/${id}/file`,
+    FILE: (id: string) => `/receipts/${id}/file`,
   },
 } as const;
