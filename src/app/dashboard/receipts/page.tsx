@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getReceipts, getReceiptFile } from "@/services/receipts";
+import { getReceipts, getReceiptFile, revokePdfUrl } from "@/services/receipts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -88,6 +88,15 @@ export default function ReceiptsPage() {
   );
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isPdfLoading, setIsPdfLoading] = useState(false);
+
+  useEffect(() => {
+    //cleanup the pdf url when the component unmounts
+    return () => {
+      if (pdfUrl) {
+        revokePdfUrl(pdfUrl);
+      }
+    };
+  }, [pdfUrl]);
 
   const { data, isLoading, refetch } = useQuery<ReceiptsResponse>({
     queryKey: ["receipts", sortOrder, search, activeFilters, page],
@@ -402,80 +411,27 @@ export default function ReceiptsPage() {
           {/* Content */}
           <div className="relative h-[70vh]">
             {isPdfLoading || isPdfQueryLoading ? (
-              <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#4880F8]" />
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#4880F8] mb-4" />
+                <p className="text-white">Cargando PDF...</p>
               </div>
-            ) : pdfUrl ? (
-              <>
-                {console.log("Attempting to load PDF from URL:", pdfUrl)}
-                <object
-                  data={pdfUrl}
-                  type="application/pdf"
-                  className="w-full h-[calc(100%-60px)]"
-                >
-                  <iframe
-                    src={pdfUrl}
-                    className="w-full h-full"
-                    style={{ background: "white" }}
-                  >
-                    <p>
-                      Your browser does not support PDFs.
-                      <a
-                        href={pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Click here to download the PDF
-                      </a>
-                    </p>
-                  </iframe>
-                </object>
-                <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-center bg-[#1E1E1E] border-t border-gray-800">
-                  <Button
-                    variant="outline"
-                    className="text-white border-gray-700 hover:bg-gray-800"
-                    onClick={handleClosePdf}
-                  >
-                    CERRAR
-                  </Button>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      className="text-[#4880F8] hover:text-[#4880F8]/90"
-                      onClick={() => window.open(pdfUrl, "_blank")}
-                    >
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Compartir
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="text-[#4880F8] hover:text-[#4880F8]/90"
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = pdfUrl;
-                        link.download = "recibo.pdf";
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Descargar
-                    </Button>
-                  </div>
-                </div>
-              </>
+            ) : receiptPdf?.file ? ( // Changed from pdfUrl to receiptPdf?.file
+              <div className="w-full h-[calc(100%-60px)] bg-white">
+                <iframe
+                  src={receiptPdf.file} // Use the URL directly from the response
+                  className="w-full h-full"
+                  title="PDF Viewer"
+                />
+              </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-white">
-                {pdfError ? (
-                  <div>
-                    <p>Error al cargar el PDF:</p>
-                    <pre className="mt-2 text-red-500">
+              <div className="flex flex-col items-center justify-center h-full text-white">
+                <p className="text-lg mb-2">Error al cargar el PDF</p>
+                {pdfError && (
+                  <div className="text-sm text-gray-400 max-w-md text-center">
+                    <pre className="whitespace-pre-wrap">
                       {JSON.stringify(pdfError, null, 2)}
                     </pre>
                   </div>
-                ) : (
-                  "Error al cargar el PDF"
                 )}
               </div>
             )}

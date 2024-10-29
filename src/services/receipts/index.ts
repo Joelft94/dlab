@@ -11,6 +11,10 @@ export interface ReceiptFilters {
   page?: number;
 }
 
+interface PDFResponse {
+  file: string;
+}
+
 export const getReceipts = async (filters?: ReceiptFilters): Promise<PaginatedResponse<Receipt>> => {
   const { data } = await axiosInstance.get<PaginatedResponse<Receipt>>(
     ENDPOINTS.RECEIPTS.LIST,
@@ -19,31 +23,35 @@ export const getReceipts = async (filters?: ReceiptFilters): Promise<PaginatedRe
   return data
 }
 
-// services/receipts/index.ts
-export const getReceiptFile = async (id: string): Promise<{ file: string }> => {
-  try {
-    console.log('Getting receipt file for ID:', id);
-    const endpoint = `${API_BASE_URL}${ENDPOINTS.RECEIPTS.FILE(id)}`;
-    console.log('Full endpoint URL:', endpoint);
-    
-    const { data } = await axiosInstance.get<{ file: string }>(endpoint);
-    console.log('Receipt file API response:', data);
-    
-    if (!data || !data.file) {
-      throw new Error('No file URL in response');
-    }
 
-    // Debug the file URL
-    console.log('File URL from response:', data.file);
+
+export const getReceiptFile = async (id: string) => {
+  try {
+    console.log('Fetching PDF URL for receipt ID:', id);
     
-    return data;
+    // Don't set responseType to 'blob' since we're expecting JSON
+    const response = await axiosInstance.get<PDFResponse>(ENDPOINTS.RECEIPTS.FILE(id));
+    
+    console.log('Response:', response.data);
+    
+    // The response.data.file should contain the PDF URL
+    if (response.data && response.data.file) {
+      return response.data; // Return the response directly which contains { file: "url" }
+    } else {
+      throw new Error('No PDF URL in response');
+    }
   } catch (error: any) {
-    console.error('Receipt file error:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-      url: `${API_BASE_URL}${ENDPOINTS.RECEIPTS.FILE(id)}`
+    console.error('Error in getReceiptFile:', {
+      error,
+      status: error?.response?.status,
+      statusText: error?.response?.statusText,
+      data: error?.response?.data,
     });
     throw error;
   }
+};
+
+// If you need to clean up the blob URL later
+export const revokePdfUrl = (url: string) => {
+  window.URL.revokeObjectURL(url);
 };
