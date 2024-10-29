@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Plus, Filter } from "lucide-react"
 import type { User } from "@/types/api"
 
 interface Filter {
@@ -21,30 +22,14 @@ interface FilterDropdownProps {
   activeFilters: Filter[]
   onAddFilter: (filter: Filter) => void
   onRemoveFilter: (filter: Filter) => void
-  data?: User[] // We'll use this to build dynamic filters
+  data?: User[]
 }
 
-// Fields we want to enable for filtering
-const FILTERABLE_FIELDS: Record<keyof Partial<User>, string> = {
-    nationality: "Nacionalidad",
-    role: "Rol",
-    employeeNumber: "Número de empleado",
+const FILTERABLE_FIELDS: Partial<Record<keyof User, string>> = {
+    nationality: "Nacionalidad", //
+    role: "Rol", // 
     isSuperuser: "Es administrador",
-    hasPendingReceipts: "Tiene recibos pendientes",
-    firstName: "Nombre",
-    lastName: "Apellido",
-    email: "Correo",
     address: "Dirección",
-    id: "id",
-    initials: "Iniciales",
-    lastLogin: "Ultima Conexión",
-    username: "Usuario",
-    fullName: "Nombre completo",
-    dateJoined: "Fecha de registro",
-    createdAt: "Creado en",
-    modifiedAt: "Modificado en",
-    phoneNumber: "Número de teléfono",
-    requiredPasswordChange: "Password Change Required",
 }
 
 export function FilterDropdown({ 
@@ -53,7 +38,6 @@ export function FilterDropdown({
   onRemoveFilter,
   data = [] 
 }: FilterDropdownProps) {
-  // Build unique values for each filterable field
   const filterOptions = Object.entries(FILTERABLE_FIELDS).map(([field, label]) => {
     const uniqueValues = new Set(
       data.map(user => String(user[field as keyof User])).filter(Boolean)
@@ -67,7 +51,7 @@ export function FilterDropdown({
         label: value.toString(),
       }))
     }
-  }).filter(category => category.options.length > 0) // Only show fields that have values
+  }).filter(category => category.options.length > 0)
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -76,19 +60,26 @@ export function FilterDropdown({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-[#4880F8] hover:bg-[#4880F8]/10 font-normal"
+            className="text-[#4880F8] hover:bg-transparent hover:text-[#4880F8]/90 p-0"
           >
-            + Agregar filtro
+            <Filter className="h-4 w-4 mr-2" />
+            Agregar filtro
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuContent 
+          align="start" 
+          className="w-56 bg-[#1E1E1E] border border-gray-800"
+        >
           {filterOptions.map((category) => (
             <DropdownMenu key={category.field}>
-              <DropdownMenuTrigger className="w-full px-2 py-1.5 text-sm hover:bg-gray-100 cursor-pointer flex items-center justify-between">
+              <DropdownMenuTrigger className="w-full px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-transparent cursor-pointer flex items-center justify-between">
                 {category.label}
                 <span className="text-gray-400">▶</span>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="right" className="w-56">
+              <DropdownMenuContent 
+                side="right" 
+                className="w-56 bg-[#1E1E1E] border border-gray-800"
+              >
                 {category.options.map((option) => (
                   <DropdownMenuItem
                     key={option.value}
@@ -100,8 +91,10 @@ export function FilterDropdown({
                     disabled={activeFilters.some(
                       f => f.field === category.field && f.value === option.value
                     )}
+                    className="flex items-center justify-between text-gray-400 hover:text-white hover:bg-transparent px-3 py-2 disabled:opacity-50"
                   >
-                    {option.label}
+                    <span>{option.label}</span>
+                    <Plus className="h-4 w-4" />
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
