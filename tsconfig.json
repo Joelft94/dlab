@@ -15,7 +15,7 @@
     "incremental": true,
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "strictFunctionTypes": false
+    "strictFunctionTypes": false,
     "plugins": [
       {
         "name": "next"
