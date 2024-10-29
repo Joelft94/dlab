@@ -1,6 +1,7 @@
 import { Providers } from '@/components/providers'
 import './globals.css'
 import type { Metadata } from 'next'
+import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: 'dTalent Dashboard',
@@ -13,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="dark">
+      <body className={cn("min-h-screen bg-background antialiased")}>
         <Providers>
           {children}
         </Providers>
