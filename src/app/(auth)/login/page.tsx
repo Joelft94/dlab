@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Image from "next/image"
 
 export default function LoginPage() {
   const { login, isLoading, error } = useAuth()
@@ -31,13 +32,12 @@ export default function LoginPage() {
       [name]: value
     }))
   }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#2A2A2A]">
       <div className="w-full max-w-md">
         <div className="bg-[#1E1E1E] p-8 rounded-lg shadow-lg">
           <div className="mb-8 flex justify-center">
-            <img src="/dtalent-logo.png" alt="dTalent" className="h-10" />
+            <Image width={500} height={500} src="/dtalent-logo.png" alt="dTalent" className="h-10" />
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

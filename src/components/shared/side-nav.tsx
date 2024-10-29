@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Users, FileText, MessageSquare, Settings, MoreVertical } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
+import Image from "next/image"
 
 const navigation = [
   { name: "Empleados", href: "/dashboard/users", icon: Users },
@@ -21,7 +22,7 @@ export function SideNav() {
     <div className="flex h-screen w-64 flex-col bg-black text-white">
       {/* Logo */}
       <div className="px-4 py-5">
-        <img src="/dtalent-logo.png" alt="dTalent" className="h-8" />
+        <Image width={500} height={500} src="/dtalent-logo.png" alt="dTalent" className="h-8" />
       </div>
       
       {/* Navigation */}
